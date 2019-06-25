@@ -133,7 +133,7 @@ void build (){
 
       fprintf(Tsig, " ");
 
-			if (strlen (sigma_bytes) == 0){
+			if (sigma_length == 0){
 				printf ("Failed to sign\n");
 			}
       for (int t = 0; t < sigma_length; t++){
