@@ -26,7 +26,6 @@ int search_server (token s_token){
 
   //build the pairing
   FILE * param_file = fopen ("param.txt", "r");
-  FILE * secret_file = fopen ("secrets", "r");
   FILE * owner_result  = fopen ("owner-result.txt", "w"); //search results for owner
   FILE * auditor_result = fopen ("auditor-result.txt", "w"); //search results for auditor
   char param_buf[PARAM_LENGTH];
@@ -56,15 +55,6 @@ int search_server (token s_token){
   unsigned char tag[SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID] = ""; //has to store id and i during concat
   unsigned char pos[SHA_DIGEST_LENGTH] = "";
   unsigned char sig_bits[SIGNATURE_LENGTH * 8 * sizeof (unsigned char)] = "";
-  //read the keys from file
-  printf ("Loading Keys...");
-  fscanf (secret_file,"%*s %s",key_);
-  unsigned char * g_bytes = (unsigned char *)malloc (strlen (key_) * sizeof (unsigned char));
-  binary2bytes (key_, g_bytes);
-  element_from_bytes_compressed (g, g_bytes);
-  free (g_bytes);
-  printf("Done.\n");
-  fclose (secret_file);
 
   int i = 0;
 

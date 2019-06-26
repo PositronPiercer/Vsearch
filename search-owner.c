@@ -64,7 +64,7 @@ void owner_search (char * keyword){
     unsigned char id_hash[SHA_DIGEST_LENGTH] = "";
     int i = 0;
 
-    mpz_t q, gmp_id, m_temp, r, gmp_temp, m_prod;
+    mpz_t q, gmp_id, m_temp, r, gmp_temp, m_sum;
     mpz_init (q);
     mpz_init (gmp_id);
     mpz_init (m_temp);
@@ -92,11 +92,12 @@ void owner_search (char * keyword){
         mpz_mod (m_temp, gmp_temp, q);
 
         if (i == 1){
-            mpz_set (m_prod, m_temp);
+            mpz_set (m_sum, m_temp);
         }
         else {
-            mpz_mul (gmp_temp, m_prod, m_temp);
-            mpz_mod (m_prod, gmp_temp, q);
+            mpz_add (gmp_temp, m_sum, m_temp);
+            //mpz_mod (m_sum, gmp_temp, q);
+            mpz_set (m_sum, gmp_temp);
         }
 
 
@@ -107,9 +108,9 @@ void owner_search (char * keyword){
     else {
         //write data to file
         printf ("count matched\n");
-        element_set_mpz (m, m_prod);
+        element_set_mpz (m, m_sum);
         element_printf ("pbc %B\n", m);
-        //mpz_get_str (key_, 10, m_prod);
+        //mpz_get_str (key_, 10, m_sum);
         //printf ("gmp %s\n",key_);
         printf ("%d\n", element_length_in_bytes (m));
         element_to_bytes (key_, m);
