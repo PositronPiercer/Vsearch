@@ -31,13 +31,14 @@ void owner_search (char * keyword){
     pbc_param_init_set_str (param, param_buf);
     pairing_init_pbc_param (pairing, param);
 
-    element_t g, sw_seed, m;
+    element_t g, sw_seed, m, m_test;
     element_t temp;
 
     element_init_G2(g, pairing);
     element_init_G2(temp, pairing);
     element_init_Zr(sw_seed, pairing);
     element_init_Zr(m, pairing);
+    element_init_Zr(m_test, pairing);
 
 
     char key_[MAX_KEY_LENGTH] = "";
@@ -91,13 +92,16 @@ void owner_search (char * keyword){
         mpz_mul (gmp_temp, r, gmp_id);
         mpz_mod (m_temp, gmp_temp, q);
 
+        // element_set_mpz (m_test, m_temp);
+        // element_printf ("m %B\n", m_test);
+
         if (i == 1){
             mpz_set (m_sum, m_temp);
         }
         else {
-            mpz_add (gmp_temp, m_sum, m_temp);
+            mpz_add (m_sum, m_sum, m_temp);
             //mpz_mod (m_sum, gmp_temp, q);
-            mpz_set (m_sum, gmp_temp);
+            //mpz_set (m_sum, gmp_temp);
         }
 
 
@@ -110,8 +114,6 @@ void owner_search (char * keyword){
         printf ("count matched\n");
         element_set_mpz (m, m_sum);
         element_printf ("pbc %B\n", m);
-        //mpz_get_str (key_, 10, m_sum);
-        //printf ("gmp %s\n",key_);
         printf ("%d\n", element_length_in_bytes (m));
         element_to_bytes (key_, m);
         printf ("%d\n", element_length_in_bytes (m));

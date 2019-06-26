@@ -76,6 +76,7 @@ int search_server (token s_token){
     set_signature(pos, sig_bits);
     binary2bytes (sig_bits, key_);
     element_from_bytes_compressed (sigma, key_);
+    //element_printf ("sig %B\n", sigma);
     if (i == 1){
         element_set (sigma_prod, sigma);
     }

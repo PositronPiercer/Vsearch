@@ -112,10 +112,13 @@ void build (){
       mpz_mul (gmp_temp, r, gmp_id);
       mpz_mod (m_temp, gmp_temp, q);
       element_set_mpz (m, m_temp);
+      //element_printf ("m %B\n", m);
+
 
       //  sign
       element_pow_zn (temp, g, m);
       element_pow_zn (sigma, temp, secret_key);
+      //element_printf ("sig %B\n", sigma);
       //calculate pos
       strcat (tag, id);
       sprintf (tag + strlen (tag), "%d", i);
