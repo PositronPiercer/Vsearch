@@ -100,8 +100,6 @@ void owner_search (char * keyword){
         }
         else {
             mpz_add (m_sum, m_sum, m_temp);
-            //mpz_mod (m_sum, gmp_temp, q);
-            //mpz_set (m_sum, gmp_temp);
         }
 
 

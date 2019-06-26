@@ -64,6 +64,8 @@ bool auditor_verification (char * keyword){
     fscanf (owner2auditor, "%s", key_);
     element_set_str (m, key_, 2);
 
+
+
     fclose (auditor_result);
     fclose (owner2auditor);
     element_pow_zn (h, g, m);
