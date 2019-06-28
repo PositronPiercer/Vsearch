@@ -7,6 +7,8 @@
 #define PARAM_LENGTH 250
 #define SIGNATURE_LENGTH 8*100
 
+#include <stdbool.h>
+
 typedef struct n{
   char * tag;
   char * tau_sigma_f;
@@ -21,3 +23,5 @@ FILE * get_id_file(char * keyword);
 void binary2bytes(unsigned char * ibuf,unsigned char * obuf);
 void set_q (unsigned char * key);
 void byte2binary_total (unsigned char * ibuf, unsigned char * obuf);
+int get_keywords_from_file (FILE * input_file, int count, char keyword_present[count][MAX_KEYWORD_LENGTH], char keyword_all[count][MAX_KEYWORD_LENGTH], int kcount[count]);
+bool keyword_is_present (int count, char keyword_all[count][MAX_KEYWORD_LENGTH], char * buff);
