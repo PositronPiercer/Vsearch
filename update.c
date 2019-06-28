@@ -33,6 +33,20 @@ void update (char * id){
         strcpy (buff, keywordPresent[i]);
         int index = getIndex (nKeywordsPresent, buff, keywordAll);
         kcount[index]++;
+
+        //add the id to the id file
+        if (kcount[index] == 1){
+            //new file needs to be created
+            FILE * id_file = create_new_id_file(buff);
+            fprintf (id_file, "%s\n", id);
+            fclose (id_file);
+        }
+        else{
+            FILE * id_file = get_id_file (buff);
+            fseek (id_file, 0 , SEEK_END);
+            fprintf (id_file, "%s\n", id);
+            fclose (id_file);
+        }
     }
 
     //write back

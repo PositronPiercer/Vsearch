@@ -43,8 +43,21 @@ unsigned long int R (unsigned char * ibuf){ //utility function
 
 FILE * get_id_file(char * keyword){
   //takes keyword as input and returns the file pointer for the file containing the ids
-  FILE * id_file = fopen ("inv_index/apple.ids","r");
+  char buff[100 + MAX_KEYWORD_LENGTH];
+  strcpy (buff, "inv_index/");
+  strcat (buff, keyword);
+  strcat (buff, ".ids");
+  FILE * id_file = fopen (buff,"r+");
   return id_file;
+}
+
+FILE * create_new_id_file(char * keyword){
+    char buff[100 + MAX_KEYWORD_LENGTH];
+    strcpy (buff, "inv_index/");
+    strcat (buff, keyword);
+    strcat (buff, ".ids");
+    FILE * id_file = fopen (buff,"w");
+    return id_file;
 }
 
 void binary2bytes(unsigned char * ibuf,unsigned char * obuf){
