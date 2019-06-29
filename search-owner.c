@@ -15,6 +15,7 @@ int get_c (char * keyword){
 }
 
 void owner_search (char * keyword){
+    printf ("_______________Owner-Search_______________\n");
     //build pairing
     FILE * owner2auditor = fopen ("owner2auditor.txt", "w");
     FILE * param_file = fopen ("param.txt", "r");
@@ -82,7 +83,7 @@ void owner_search (char * keyword){
         sprintf (sw + strlen (sw), "%d", i);
         unsigned long int rtemp = R (sw);
   	  //remove end digit from sw
-        int c_copy = c;
+        int c_copy = i;
         while (c_copy){
         sw[strlen (sw) - 1] = 0;
         c_copy /= 10;
@@ -115,7 +116,7 @@ void owner_search (char * keyword){
         //write data to file
         printf ("count matched\n");
         element_set_mpz (m, m_sum);
-        element_printf ("pbc %B\n", m);
+        //element_printf ("pbc %B\n", m);
         printf ("%d\n", element_length_in_bytes (m));
         element_to_bytes (key_, m);
         printf ("%d\n", element_length_in_bytes (m));

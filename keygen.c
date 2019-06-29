@@ -6,19 +6,19 @@
 #include "utilities.h"
 
 typedef struct{
-    char * Kt;
+    unsigned char * Kt;
     int Kt_length;
 
-    char * Ks;
+    unsigned char * Ks;
     int Ks_length;
 
-    char * Sk;
+    unsigned char * Sk;
     int Sk_length;
 
-    char * Pk;
+    unsigned char * Pk;
     int Pk_length;
 
-    char * g;
+    unsigned char * g;
     int g_length;
 
 }keys;
@@ -26,7 +26,7 @@ typedef struct{
 
 
 int keygen(unsigned long int lambda,keys * K_psi_l){
-
+    printf ("_______________Keygen_______________\n");
     pbc_param_t param;
     pairing_t pairing;
 
@@ -57,26 +57,29 @@ int keygen(unsigned long int lambda,keys * K_psi_l){
 
     element_pow_zn(public_key, g, private_key); //corresponding public key.
 
+    //element_printf ("Pk(%d) %B\n",element_length_in_bytes_compressed(public_key), public_key);
 
     K_psi_l->Sk_length = element_length_in_bytes(private_key);
     K_psi_l->Ks_length = element_length_in_bytes(sw_seed);
     K_psi_l->Kt_length = element_length_in_bytes(tag_seed);
-    K_psi_l->Pk_length = element_length_in_bytes(public_key);
+    K_psi_l->Pk_length = element_length_in_bytes_compressed(public_key);
     K_psi_l->g_length = element_length_in_bytes_compressed(g);
 
-    K_psi_l->Sk = (char *)malloc(K_psi_l->Sk_length*sizeof(char));
-    K_psi_l->Pk = (char *)malloc(K_psi_l->Pk_length*sizeof(char));
-    K_psi_l->Ks = (char *)malloc(K_psi_l->Ks_length*sizeof(char));
-    K_psi_l->Kt = (char *)malloc(K_psi_l->Kt_length*sizeof(char));
-    K_psi_l->g = (char *)malloc(K_psi_l->g_length*sizeof(char));
+    K_psi_l->Sk = (unsigned char *)malloc(K_psi_l->Sk_length*sizeof(unsigned char));
+    K_psi_l->Pk = (unsigned char *)malloc(K_psi_l->Pk_length*sizeof(unsigned char));
+    K_psi_l->Ks = (unsigned char *)malloc(K_psi_l->Ks_length*sizeof(unsigned char));
+    K_psi_l->Kt = (unsigned char *)malloc(K_psi_l->Kt_length*sizeof(unsigned char));
+    K_psi_l->g = (unsigned char *)malloc(K_psi_l->g_length*sizeof(unsigned char));
 
 
     element_to_bytes(K_psi_l->Sk,private_key);
-    element_to_bytes(K_psi_l->Pk,public_key);
+    element_to_bytes_compressed(K_psi_l->Pk,public_key);
     element_to_bytes(K_psi_l->Kt,tag_seed);
     element_to_bytes(K_psi_l->Ks,sw_seed);
     element_to_bytes_compressed(K_psi_l->g, g);
+    printf ("length %d\n", strlen(K_psi_l->Pk));
 
+    //printf ("%s\n", K_psi_l->Pk);
     //freeing Memory
     element_clear(private_key);
     element_clear(public_key);

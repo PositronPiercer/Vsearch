@@ -20,7 +20,7 @@ void set_signature (unsigned char * pos, unsigned char * sig_bits){
 
 
 int search_server (token s_token){
-  printf ("__Cloud-Search__\n");
+  printf ("_______________Cloud-Search_______________\n");
   //get the id file
   FILE * id_file = get_id_file (s_token.tau_sigma_f);
 
@@ -70,8 +70,6 @@ int search_server (token s_token){
     sprintf (tag + strlen (tag), "%d", i);
     F (tag, pos);
 
-
-
     //get signature
     set_signature(pos, sig_bits);
     binary2bytes (sig_bits, key_);
@@ -84,8 +82,9 @@ int search_server (token s_token){
         element_mul (sigma_prod, sigma_prod, sigma);
     }
   }
+  element_printf ("Sig prod %B\n", sigma_prod);
   element_to_bytes_compressed (key_, sigma_prod);
-  for (int i = 0; i < strlen (key_); i++){
+  for (int i = 0; i < element_length_in_bytes_compressed (sigma_prod); i++){
       fprintf (auditor_result, "%s", byte_to_binary (key_[i]));
   }
   fprintf (auditor_result, "\n");

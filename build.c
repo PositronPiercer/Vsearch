@@ -6,6 +6,7 @@
 #include "utilities.h"
 
 void build (){
+  printf ("_______________Build_______________\n");
   FILE * W = fopen ("keywords", "r");
   FILE * Tsig = fopen ("signatures", "w");
   FILE * secret_file = fopen ("secrets", "r");
@@ -58,7 +59,6 @@ void build (){
   fscanf (secret_file,"%*s %s",key_);
   element_set_str(tag_seed, key_, 2);
   printf("Done.\n");
-
   unsigned char w[MAX_KEYWORD_LENGTH] = "";
   unsigned char w2[MAX_KEYWORD_LENGTH] = "";
   char id[MAX_ID_LENGTH] = "";
@@ -71,6 +71,7 @@ void build (){
 
   mpz_t q, gmp_id, m_temp, r, gmp_temp;
   mpz_init (q);
+  //mpz_init (m_sum);
   mpz_init (gmp_id);
   mpz_init (m_temp);
   mpz_init (r);
@@ -83,6 +84,8 @@ void build (){
   printf ("Building...\n");
 
   while (fscanf (W,"%s %d", w, &c) == 2){
+    if (c == 0)
+        continue;
     printf ("Keyword : %s\n", w);
     id_file = get_id_file (w);
     strcpy (w2,w);
@@ -91,6 +94,8 @@ void build (){
     element_to_bytes (w2 + strlen (w2), tag_seed);
     F (w, sw);
     F (w2, tag);
+    printf ("%d %d \n", strlen (sw), strlen (tag));
+
     strcpy (tag_temp,tag);
     for (int i = 1; i <= c; i++){
       strcpy(tag,tag_temp);
@@ -102,7 +107,7 @@ void build (){
       sprintf (sw + strlen (sw), "%d", i);
       unsigned long int rtemp = R (sw);
 	  //remove end digit from sw
-      int c_copy = c;
+      int c_copy = i;
       while (c_copy){
 	  sw[strlen (sw) - 1] = 0;
       c_copy /=10;
@@ -117,20 +122,24 @@ void build (){
       mpz_mod (m_temp, gmp_temp, q);
       element_set_mpz (m, m_temp);
       //element_printf ("m %B\n", m);
+      //mpz_add(m_sum, m_sum, m_temp);
 
 
       //  sign
       element_pow_zn (temp, g, m);
       element_pow_zn (sigma, temp, secret_key);
-      //element_printf ("sig %B\n", sigma);
+      //element_printf ("sig  - %B\n", sigma);
       //calculate pos
       strcat (tag, id);
       sprintf (tag + strlen (tag), "%d", i);
 
       F (tag, pos);
+      // for (int gk  =0;gk<SHA_DIGEST_LENGTH;gk++)
+      // printf ("%c_",pos[gk]);
+      // printf ("\n");
       tag[strlen (tag) - 1] = 0;
       int sigma_length = element_length_in_bytes_compressed (sigma);
-
+      //printf ("poslen %d\n", strlen (pos));
       unsigned char * sigma_bytes = (unsigned char *)malloc (sigma_length * sizeof (unsigned char));
       element_to_bytes_compressed (sigma_bytes, sigma);
       //print to file
@@ -151,6 +160,8 @@ void build (){
     }
     fclose (id_file);
 	}
+    //element_set_mpz (m, m_sum);
+    //element_printf ("M sum %B\n",m);
   fclose (W);
   fclose (Tsig);
   fclose (secret_file);

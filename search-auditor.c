@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 bool auditor_verification (char * keyword){
+    printf ("_______________Auditor-Search_______________\n");
     FILE * owner2auditor = fopen ("owner2auditor.txt", "r");
     FILE * auditor_result = fopen ("auditor-result.txt", "r");
     //generate the pairing
@@ -52,7 +53,7 @@ bool auditor_verification (char * keyword){
     fscanf (secret_file,"%*s %s",key_);
     unsigned char * p_bytes = (unsigned char *)malloc (strlen (key_) * sizeof (unsigned char));
     binary2bytes (key_, p_bytes);
-    element_from_bytes_compressed (public_key, p_bytes);
+    int plength = element_from_bytes_compressed (public_key, p_bytes);
     free (p_bytes);
     printf("Done.\n");
     fclose (secret_file);
@@ -60,10 +61,9 @@ bool auditor_verification (char * keyword){
     fscanf (auditor_result, "%s", key_);
     binary2bytes (key_, temp_bytes);
     element_from_bytes_compressed (sig_owner, temp_bytes);
-
+    element_printf ("sig : %B\n",sig_owner);
     fscanf (owner2auditor, "%s", key_);
     element_set_str (m, key_, 2);
-
 
 
     fclose (auditor_result);

@@ -25,3 +25,4 @@ void set_q (unsigned char * key);
 void byte2binary_total (unsigned char * ibuf, unsigned char * obuf);
 int get_keywords_from_file (FILE * input_file, int count, char keyword_present[count][MAX_KEYWORD_LENGTH], char keyword_all[count][MAX_KEYWORD_LENGTH], int kcount[count]);
 bool keyword_is_present (int count, char keyword_all[count][MAX_KEYWORD_LENGTH], char * buff);
+FILE * create_new_id_file(char * keyword);
