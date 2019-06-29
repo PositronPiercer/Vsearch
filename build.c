@@ -102,7 +102,11 @@ void build (){
       sprintf (sw + strlen (sw), "%d", i);
       unsigned long int rtemp = R (sw);
 	  //remove end digit from sw
+      int c_copy = c;
+      while (c_copy){
 	  sw[strlen (sw) - 1] = 0;
+      c_copy /=10;
+  }
       mpz_set_ui (r, rtemp);
 
       byte2binary_total (id, key_);

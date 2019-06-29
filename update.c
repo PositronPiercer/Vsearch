@@ -13,6 +13,10 @@ int getIndex (int count, char * ibuf, char set[count][MAX_KEYWORD_LENGTH]){
 
 }
 
+void add_sig_pos (char * w, char * id, int i){
+
+}
+
 void update (char * id){
     char buff[MAX_KEY_LENGTH] = "";
     FILE * newFile = fopen (id, "r");
@@ -42,11 +46,16 @@ void update (char * id){
             fclose (id_file);
         }
         else{
+            // should check whether the id is already present or not
             FILE * id_file = get_id_file (buff);
             fseek (id_file, 0 , SEEK_END);
             fprintf (id_file, "%s\n", id);
             fclose (id_file);
         }
+
+        //create the pos and signature pair
+
+        add_sig_pos (buff, id, kcount[index]);
     }
 
     //write back
