@@ -29,7 +29,6 @@ void update (char * id){
     pbc_param_t param;
     pairing_t pairing;
 
-    //pbc_param_init_a_gen (param, LAMBDA, 128);
     //get parameters
     read_entire_file (param_file, param_buf);
     fclose (param_file);
@@ -96,7 +95,11 @@ void update (char * id){
     char keywordAll[nKeywords][MAX_KEYWORD_LENGTH];
     int kcount[nKeywords]; //stores the count of each keyword
     int nKeywordsPresent = get_keywords_from_file (newFile, nKeywords, keywordPresent, keywordAll, kcount);
-
+    printf ("#keywords present %d\n", nKeywordsPresent);
+    for (int t = 0; t < nKeywordsPresent; t++){
+        printf ("%s\t", keywordPresent[t]);
+    }
+    printf ("\n");
 
     fclose (keyword_file);
     for (int i = 0; i < nKeywordsPresent; i++){
@@ -194,6 +197,6 @@ void update (char * id){
 }
 
 int main(){
-    char * id = "input_files/input1.txt";
+    char * id = "input_files/input2.txt";
     update (id);
 }
