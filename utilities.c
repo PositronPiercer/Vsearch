@@ -96,3 +96,11 @@ void byte2binary_total (unsigned char * ibuf, unsigned char * obuf){
 
 
 }
+
+int print_to_binary(int length,FILE * secret_file,char * secret_type, char * sec){
+    fprintf(secret_file,"%s ",secret_type);
+    for(int i=0;i<length;i++){
+        fprintf(secret_file,"%s",byte_to_binary(*(sec + i)));
+    }
+    fprintf(secret_file,"\n");
+}

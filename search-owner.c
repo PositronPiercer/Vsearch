@@ -122,8 +122,3 @@ void owner_search (char * keyword){
     fclose (id_file);
     fclose (owner2auditor);
 }
-
-int main(){
-    char * keyword = "apple";
-    owner_search (keyword);
-}

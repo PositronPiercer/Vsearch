@@ -13,9 +13,6 @@ int getIndex (int count, char * ibuf, char set[count][MAX_KEYWORD_LENGTH]){
 
 }
 
-void add_sig_pos (char * w, char * id, int i){
-
-}
 
 void update (char * id){
     //--------------
@@ -194,9 +191,4 @@ void update (char * id){
         fprintf (k, "%s %d\n", keywordAll[i], kcount[i]);
     }
     fclose (k);
-}
-
-int main(){
-    char * id = "input_files/input2.txt";
-    update (id);
 }

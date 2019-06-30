@@ -3,7 +3,8 @@
 #include <pbc/pbc.h>
 #include <string.h>
 #include <openssl/sha.h>
-#include "utilities.h"
+//#include "utilities.h"
+#include "vsearch.h"
 
 void build (){
   printf ("_______________Build_______________\n");
@@ -157,10 +158,4 @@ void build (){
   fclose (secret_file);
 
 
-}
-
-
-int main (){
-
-	build ();
 }

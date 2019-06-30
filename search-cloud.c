@@ -3,8 +3,8 @@
 #include <pbc/pbc.h>
 #include <string.h>
 #include <openssl/sha.h>
-#include "utilities.h"
-#include "search_token.h"
+//#include "utilities.h"
+#include "vsearch.h"
 
 void set_signature (unsigned char * pos, unsigned char * sig_bits){
   FILE * sig_file = fopen ("signatures", "r");
@@ -95,9 +95,4 @@ int search_server (token s_token){
   fclose (auditor_result);
 
 
-}
-int main(){
-  char * keyword = "apple";
-  token s_token = search_token(keyword);
-  search_server (s_token);
 }

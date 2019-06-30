@@ -3,29 +3,10 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include "utilities.h"
+//#include "utilities.h"
+#include "vsearch.h"
 
-typedef struct{
-    unsigned char * Kt;
-    int Kt_length;
-
-    unsigned char * Ks;
-    int Ks_length;
-
-    unsigned char * Sk;
-    int Sk_length;
-
-    unsigned char * Pk;
-    int Pk_length;
-
-    unsigned char * g;
-    int g_length;
-
-}keys;
-
-
-
-int keygen(unsigned long int lambda,keys * K_psi_l){
+int keygen_compute(unsigned long int lambda,keys * K_psi_l){
     printf ("\n_______________Keygen_______________\n");
     pbc_param_t param;
     pairing_t pairing;
@@ -85,19 +66,11 @@ int keygen(unsigned long int lambda,keys * K_psi_l){
     return 0;
 }
 
-int print_to_binary(int length,FILE * secret_file,char * secret_type, char * sec){
-    fprintf(secret_file,"%s ",secret_type);
-    for(int i=0;i<length;i++){
-        fprintf(secret_file,"%s",byte_to_binary(*(sec + i)));
-    }
-    fprintf(secret_file,"\n");
-}
-
-int main() {
+int keygen() {
     keys * K_psi_l;
     K_psi_l = (keys*)malloc(sizeof(keys));
     printf("Generating Keys...");
-    while(keygen(256,K_psi_l)){
+    while(keygen_compute(256,K_psi_l)){
         printf("Retrying...\n");
     }
 

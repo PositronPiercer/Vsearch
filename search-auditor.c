@@ -78,10 +78,3 @@ bool auditor_verification (char * keyword){
     return true;
 
 }
-
-int main(){
-    char * keyword = "apple";
-    if (auditor_verification (keyword))
-        printf ("Accept\n");
-    else printf ("Reject\n");
-}
