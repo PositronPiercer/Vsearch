@@ -82,12 +82,14 @@ int search_server (token s_token){
         element_mul (sigma_prod, sigma_prod, sigma);
     }
   }
-  element_printf ("Sig prod %B\n", sigma_prod);
   element_to_bytes_compressed (key_, sigma_prod);
+  printf("Owner results written\n");
+  printf ("Writing auditor-result...");
   for (int i = 0; i < element_length_in_bytes_compressed (sigma_prod); i++){
       fprintf (auditor_result, "%s", byte_to_binary (key_[i]));
   }
   fprintf (auditor_result, "\n");
+  printf ("done\n");
 
   fclose (owner_result);
   fclose (auditor_result);

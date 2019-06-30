@@ -61,7 +61,6 @@ bool auditor_verification (char * keyword){
     fscanf (auditor_result, "%s", key_);
     binary2bytes (key_, temp_bytes);
     element_from_bytes_compressed (sig_owner, temp_bytes);
-    element_printf ("sig : %B\n",sig_owner);
     fscanf (owner2auditor, "%s", key_);
     element_set_str (m, key_, 2);
 

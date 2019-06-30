@@ -94,7 +94,6 @@ void build (){
     element_to_bytes (w2 + strlen (w2), tag_seed);
     F (w, sw);
     F (w2, tag);
-    printf ("%d %d \n", strlen (sw), strlen (tag));
 
     strcpy (tag_temp,tag);
     for (int i = 1; i <= c; i++){
@@ -121,25 +120,18 @@ void build (){
       mpz_mul (gmp_temp, r, gmp_id);
       mpz_mod (m_temp, gmp_temp, q);
       element_set_mpz (m, m_temp);
-      //element_printf ("m %B\n", m);
-      //mpz_add(m_sum, m_sum, m_temp);
-
 
       //  sign
       element_pow_zn (temp, g, m);
       element_pow_zn (sigma, temp, secret_key);
-      //element_printf ("sig  - %B\n", sigma);
+
       //calculate pos
       strcat (tag, id);
       sprintf (tag + strlen (tag), "%d", i);
 
       F (tag, pos);
-      // for (int gk  =0;gk<SHA_DIGEST_LENGTH;gk++)
-      // printf ("%c_",pos[gk]);
-      // printf ("\n");
       tag[strlen (tag) - 1] = 0;
       int sigma_length = element_length_in_bytes_compressed (sigma);
-      //printf ("poslen %d\n", strlen (pos));
       unsigned char * sigma_bytes = (unsigned char *)malloc (sigma_length * sizeof (unsigned char));
       element_to_bytes_compressed (sigma_bytes, sigma);
       //print to file
@@ -160,8 +152,6 @@ void build (){
     }
     fclose (id_file);
 	}
-    //element_set_mpz (m, m_sum);
-    //element_printf ("M sum %B\n",m);
   fclose (W);
   fclose (Tsig);
   fclose (secret_file);
@@ -171,7 +161,6 @@ void build (){
 
 
 int main (){
-  //get the Keys
 
 	build ();
 }

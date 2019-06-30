@@ -9,7 +9,7 @@
 
 
 token search_token (char * keyword){
-  printf ("search-token generation\n");
+  printf ("_______________Search-token Generation_______________\n");
   token s_token;
   s_token.tau_sigma_f = (char *)malloc (strlen (keyword) * sizeof (char));
   strcpy (s_token.tau_sigma_f, keyword);

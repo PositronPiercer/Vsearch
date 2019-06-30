@@ -76,7 +76,7 @@ void owner_search (char * keyword){
     mpz_set_str (q, key_, 10);
     while (fgets (id, MAX_ID_LENGTH, id_file) != NULL){
         id[strlen (id) -1] = 0;
-        printf("%s\n", id);
+        printf("id = %s\n", id);
         i++;
         //calculate r
         //append i to the end of sw
@@ -97,9 +97,6 @@ void owner_search (char * keyword){
         mpz_mul (gmp_temp, r, gmp_id);
         mpz_mod (m_temp, gmp_temp, q);
 
-        // element_set_mpz (m_test, m_temp);
-        // element_printf ("m %B\n", m_test);
-
         if (i == 1){
             mpz_set (m_sum, m_temp);
         }
@@ -116,10 +113,7 @@ void owner_search (char * keyword){
         //write data to file
         printf ("count matched\n");
         element_set_mpz (m, m_sum);
-        //element_printf ("pbc %B\n", m);
-        printf ("%d\n", element_length_in_bytes (m));
         element_to_bytes (key_, m);
-        printf ("%d\n", element_length_in_bytes (m));
         for (int i = 0; i< element_length_in_bytes (m); i++){
             fprintf (owner2auditor, "%s", byte_to_binary (key_[i]));
         }

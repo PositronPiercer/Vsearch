@@ -26,7 +26,7 @@ typedef struct{
 
 
 int keygen(unsigned long int lambda,keys * K_psi_l){
-    printf ("_______________Keygen_______________\n");
+    printf ("\n_______________Keygen_______________\n");
     pbc_param_t param;
     pairing_t pairing;
 
@@ -54,10 +54,7 @@ int keygen(unsigned long int lambda,keys * K_psi_l){
     element_random(sw_seed);
     element_random(tag_seed);
 
-
     element_pow_zn(public_key, g, private_key); //corresponding public key.
-
-    //element_printf ("Pk(%d) %B\n",element_length_in_bytes_compressed(public_key), public_key);
 
     K_psi_l->Sk_length = element_length_in_bytes(private_key);
     K_psi_l->Ks_length = element_length_in_bytes(sw_seed);
@@ -77,9 +74,7 @@ int keygen(unsigned long int lambda,keys * K_psi_l){
     element_to_bytes(K_psi_l->Kt,tag_seed);
     element_to_bytes(K_psi_l->Ks,sw_seed);
     element_to_bytes_compressed(K_psi_l->g, g);
-    printf ("length %d\n", strlen(K_psi_l->Pk));
 
-    //printf ("%s\n", K_psi_l->Pk);
     //freeing Memory
     element_clear(private_key);
     element_clear(public_key);
