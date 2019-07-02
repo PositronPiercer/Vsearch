@@ -33,7 +33,8 @@ int main(){
                 break;
             case 4:
                 printf ("Enter file id : ");
-                fgets (buff, MAX_ID_LENGTH, stdin);
+                scanf ("%s", buff);
+                //fgets (buff, MAX_ID_LENGTH, stdin);
                 update (buff);
                 break;
             default: printf ("Invalid choice\n");
