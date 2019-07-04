@@ -131,6 +131,7 @@ void update (char * id){
         element_to_bytes (w + strlen (w), sw_seed);
         element_to_bytes (w2 + strlen (w2), tag_seed);
         F (w, sw);
+        memset (tag, 0, SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID);
         F (w2, tag);
         // strcpy (tag_temp,tag)
         // strcpy(tag,tag_temp);

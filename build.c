@@ -103,12 +103,12 @@ void build (){
     //printf ("%s\n", sw);
     //element_printf  ("ts : %B\n",tag_seed);
     strcpy (tag_temp,tag);
-    printf ("length %d\n", element_length_in_bytes(tag_seed));
-    printf ("tag seed  : %s\n%d\n",w2,strlen (w2));
-    printf ("tag  : %s\n",tag);
+    //printf ("length %d\n", element_length_in_bytes(tag_seed));
+    //printf ("tag seed  : %s\n%d\n",w2,strlen (w2));
+    //printf ("tag  : %s\n",tag);
     for (int i = 1; i <= c; i++){
       strcpy(tag,tag_temp);
-      printf ("tag  : %s\n",tag);
+      //printf ("tag  : %s\n",tag);
       memset (id, 0, MAX_ID_LENGTH);
       fgets (id, MAX_ID_LENGTH, id_file);
 	  //remove \n from end
