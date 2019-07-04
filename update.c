@@ -10,6 +10,9 @@ int getIndex (int count, char * ibuf, char set[count][MAX_KEYWORD_LENGTH]){
         if (!strcmp (set[index], ibuf))
             return index;
     }
+    if (index == -1){
+        printf ("Keyword not found.\n");
+    }
 
 }
 
@@ -102,7 +105,7 @@ void update (char * id){
     for (int i = 0; i < nKeywordsPresent; i++){
         //update the count
         strcpy (buff, keywordPresent[i]);
-        int index = getIndex (nKeywordsPresent, buff, keywordAll);
+        int index = getIndex (nKeywords, buff, keywordAll);
         kcount[index]++;
 
         //add the id to the id file

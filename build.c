@@ -27,12 +27,13 @@ void build (){
   pbc_param_init_set_str(param, param_buf);
   pairing_init_pbc_param (pairing, param);
 
-  element_t secret_key, g, sw_seed, tag_seed, m, pbc_id_hash, h;
+  element_t secret_key, g, sw_seed, tag_seed, m, pbc_id_hash, h,sig_prod;
   element_t sigma, temp, sig_temp;
 
   element_init_G2(g, pairing);
   element_init_G2(h, pairing);
   element_init_G2(temp, pairing);
+  element_init_G2(sig_prod, pairing);
   element_init_G2(sig_temp, pairing);
   element_init_G2(sigma, pairing);
   element_init_Zr(secret_key, pairing);
@@ -59,6 +60,7 @@ void build (){
   element_set_str(sw_seed, key_, 2);
   fscanf (secret_file,"%*s %s",key_);
   element_set_str(tag_seed, key_, 2);
+
   printf("Done.\n");
   unsigned char w[MAX_KEYWORD_LENGTH] = "";
   unsigned char w2[MAX_KEYWORD_LENGTH] = "";
@@ -70,9 +72,9 @@ void build (){
   FILE * id_file;
   int c;
 
-  mpz_t q, gmp_id, m_temp, r, gmp_temp;
+  mpz_t q, gmp_id, m_temp, r, gmp_temp, m_sum;
   mpz_init (q);
-  //mpz_init (m_sum);
+  mpz_init (m_sum);
   mpz_init (gmp_id);
   mpz_init (m_temp);
   mpz_init (r);
@@ -87,24 +89,35 @@ void build (){
   while (fscanf (W,"%s %d", w, &c) == 2){
     if (c == 0)
         continue;
+    mpz_set_ui (m_sum,0);
     printf ("Keyword : %s\n", w);
     id_file = get_id_file (w);
     strcpy (w2,w);
+    //printf ("w length : %d w2 length : %d\n", strlen (w), strlen (w2));
     //appending sw_seed to the end of w
     element_to_bytes (w + strlen (w), sw_seed);
     element_to_bytes (w2 + strlen (w2), tag_seed);
     F (w, sw);
+    memset (tag, 0, SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID);
     F (w2, tag);
-
+    //printf ("%s\n", sw);
+    //element_printf  ("ts : %B\n",tag_seed);
     strcpy (tag_temp,tag);
+    printf ("length %d\n", element_length_in_bytes(tag_seed));
+    printf ("tag seed  : %s\n%d\n",w2,strlen (w2));
+    printf ("tag  : %s\n",tag);
     for (int i = 1; i <= c; i++){
       strcpy(tag,tag_temp);
+      printf ("tag  : %s\n",tag);
+      memset (id, 0, MAX_ID_LENGTH);
       fgets (id, MAX_ID_LENGTH, id_file);
 	  //remove \n from end
 	  id[strlen (id) - 1] = 0;
+      // fscanf(id_file, "%s", id);
       //calculate r
       //append i to the end of sw
       sprintf (sw + strlen (sw), "%d", i);
+
       unsigned long int rtemp = R (sw);
 	  //remove end digit from sw
       int c_copy = i;
@@ -120,17 +133,32 @@ void build (){
       //calculate m
       mpz_mul (gmp_temp, r, gmp_id);
       mpz_mod (m_temp, gmp_temp, q);
+      if (i == 1 ){
+          mpz_set (m_sum, m_temp);
+
+      }
+      else{
+      mpz_add (m_sum, m_sum, m_temp);
+  }
       element_set_mpz (m, m_temp);
 
       //  sign
       element_pow_zn (temp, g, m);
       element_pow_zn (sigma, temp, secret_key);
+      //element_printf ("sig : %B\n",sigma);
+      if (i ==1){
+          element_set (sig_prod, sigma);
+      }
+      else{
+          element_mul (sig_prod, sig_prod, sigma);
+      }
 
       //calculate pos
       strcat (tag, id);
       sprintf (tag + strlen (tag), "%d", i);
 
       F (tag, pos);
+      //printf ("%s\n",tag);
       tag[strlen (tag) - 1] = 0;
       int sigma_length = element_length_in_bytes_compressed (sigma);
       unsigned char * sigma_bytes = (unsigned char *)malloc (sigma_length * sizeof (unsigned char));
@@ -151,6 +179,8 @@ void build (){
       fprintf(Tsig, "\n");
 
     }
+    element_set_mpz (m,m_sum);
+    //element_printf ("sig_prod : %B\n", sig_prod);
     fclose (id_file);
 	}
   fclose (W);

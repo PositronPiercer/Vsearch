@@ -61,7 +61,7 @@ void owner_search (char * keyword){
     strcpy (sw_seed_, keyword);
     element_to_bytes (sw_seed_ + strlen (sw_seed_), sw_seed); //no need to create pbc element
     F (sw_seed_, sw);
-
+    //printf ("%s\n",sw);
     char id[MAX_ID_LENGTH] = "";
     unsigned char id_hash[SHA_DIGEST_LENGTH] = "";
     int i = 0;
@@ -81,6 +81,7 @@ void owner_search (char * keyword){
         //calculate r
         //append i to the end of sw
         sprintf (sw + strlen (sw), "%d", i);
+        //printf ("%s\n", keyword);
         unsigned long int rtemp = R (sw);
   	  //remove end digit from sw
         int c_copy = i;
@@ -113,6 +114,7 @@ void owner_search (char * keyword){
         //write data to file
         printf ("count matched\n");
         element_set_mpz (m, m_sum);
+        //element_printf ("sum %B\n",m);
         element_to_bytes (key_, m);
         for (int i = 0; i< element_length_in_bytes (m); i++){
             fprintf (owner2auditor, "%s", byte_to_binary (key_[i]));

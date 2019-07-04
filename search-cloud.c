@@ -60,12 +60,14 @@ int search_server (token s_token){
 
   while (fgets (id, MAX_ID_LENGTH, id_file) != NULL){
     //remove \n from end
+    if (id[strlen (id) - 1] == '\n')
     id[strlen (id) - 1] = 0;
 
     fprintf (owner_result, "%s\n", id);
     i++;
     //calculate pos
     strcpy (tag, s_token.tag);
+    //printf ("tag : %s\n",tag);
     strcat (tag, id);
     sprintf (tag + strlen (tag), "%d", i);
     F (tag, pos);
@@ -83,6 +85,7 @@ int search_server (token s_token){
     }
   }
   element_to_bytes_compressed (key_, sigma_prod);
+  //element_printf ("sig prod %B\n", sigma_prod);
   printf("Owner results written\n");
   printf ("Writing auditor-result...");
   for (int i = 0; i < element_length_in_bytes_compressed (sigma_prod); i++){

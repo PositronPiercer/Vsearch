@@ -15,7 +15,7 @@ token search_token (char * keyword){
   strcpy (s_token.tau_sigma_f, keyword);
 
   FILE * param_file = fopen ("param.txt", "r");
-  char param_buf[PARAM_LENGTH] = "";
+  unsigned char param_buf[PARAM_LENGTH] = "";
 
 
   pbc_param_t param;
@@ -34,8 +34,8 @@ token search_token (char * keyword){
 
   //get the tag_seed
   printf ("Generaring tag...");
-  char key_[MAX_KEY_LENGTH] = "";
-  char tag[SHA_DIGEST_LENGTH] = "";
+  unsigned char key_[MAX_KEY_LENGTH] = "";
+  unsigned char tag[SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID] = "";
   FILE * secret_file = fopen ("secrets", "r");
   fscanf (secret_file, "%*s %s",key_);
   fscanf (secret_file, "%*s %s",key_);
@@ -47,10 +47,14 @@ token search_token (char * keyword){
   element_set_str (tag_seed, key_, 2);
 
   //generate tag
-  char tg[MAX_KEYWORD_LENGTH + MAX_KEY_LENGTH] = "";
+  unsigned char tg[MAX_KEYWORD_LENGTH + MAX_KEY_LENGTH] = "";
   strcpy (tg, keyword);
+  element_printf ("ts %B\n",tag_seed);
   element_to_bytes (tg + strlen (tg), tag_seed);
   F (tg, tag);
+  printf ("length %d\n", element_length_in_bytes(tag_seed));
+  printf ("tagseed : %s\n%d\n",tg,strlen (tg));
+  printf ("tag : %s\n",tag);
   printf("Done\n");
   s_token.tag = (char *)malloc (strlen (tag) * sizeof (char));
   strcpy (s_token.tag, tag);

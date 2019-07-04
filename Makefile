@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -lpbc -lgmp -lssl -lcrypto -lm -O3
+CFLAGS = -lpbc -lgmp -lssl -lcrypto -lm
 
 all: vsearch
 
