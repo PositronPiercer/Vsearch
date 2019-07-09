@@ -75,6 +75,14 @@ bool auditor_verification (char * keyword){
     if (element_cmp (temp1, temp2))
         return false;
 
+        element_clear(public_key);
+        element_clear(g);
+        element_clear(h);
+        element_clear(temp1);
+        element_clear(temp2);
+        element_clear(m);
+        element_clear(sig_owner);
+        element_clear(temp);
     return true;
 
 }

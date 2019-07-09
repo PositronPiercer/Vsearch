@@ -121,6 +121,11 @@ void owner_search (char * keyword){
         }
         fprintf (owner2auditor, "\n");
     }
+    element_clear (g);
+    element_clear (sw_seed);
+    element_clear (m);
+    element_clear (m_test);
+    element_clear (temp);
     fclose (id_file);
     fclose (owner2auditor);
 }

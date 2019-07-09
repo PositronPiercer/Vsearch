@@ -4,15 +4,15 @@
 #include <string.h>
 #include "utilities.h"
 
-int getIndex (int count, char * ibuf, char set[count][MAX_KEYWORD_LENGTH]){
-    int index = -1;
+int getIndex (int count, char * ibuf, char ** set){
+    int index = 0;
     for (;index < count; index++){
         if (!strcmp (set[index], ibuf))
             return index;
     }
-    if (index == -1){
         printf ("Keyword not found.\n");
-    }
+        exit(0);
+
 
 }
 
@@ -53,7 +53,7 @@ void update (char * id){
     char buff[MAX_KEY_LENGTH] = "";
 
     //read the keys from file
-    printf ("Loading Keys...");
+    //printf ("Loading Keys...");
     fscanf (secret_file,"%*s %s",buff);
     unsigned char * g_bytes = (unsigned char *)malloc (strlen (buff) * sizeof (unsigned char));
     binary2bytes (buff, g_bytes);
@@ -67,14 +67,14 @@ void update (char * id){
     element_set_str(sw_seed, buff, 2);
     fscanf (secret_file,"%*s %s",buff);
     element_set_str(tag_seed, buff, 2);
-    printf("Done.\n");
+    //printf("Done.\n");
 
     unsigned char w[MAX_KEYWORD_LENGTH] = "";
     unsigned char w2[MAX_KEYWORD_LENGTH] = "";
     unsigned char pos[SHA_DIGEST_LENGTH] = "";
     unsigned char sw[SHA_DIGEST_LENGTH + MAX_NID] = ""; //has to store i during concat
     unsigned char tag[SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID] = ""; //has to store id and i during concat
-    //unsigned char tag_temp[SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID] = "";
+    
 
     mpz_t q, gmp_id, m_temp, r, gmp_temp;
     mpz_init (q);
@@ -90,10 +90,20 @@ void update (char * id){
     int nKeywords = 0;
     //count number of nKeywords
     while (fscanf (keyword_file, "%s %*d", buff) == 1) nKeywords++;
-    printf ("#keywords %d\n",nKeywords);
-    char keywordPresent[nKeywords][MAX_KEYWORD_LENGTH];
-    char keywordAll[nKeywords][MAX_KEYWORD_LENGTH];
-    int kcount[nKeywords]; //stores the count of each keyword
+    //printf ("#keywords %d\n",nKeywords);
+    char **keywordAll;
+    char **keywordPresent;
+    keywordAll = malloc(nKeywords * sizeof(char*));
+    for(int i = 0; i < nKeywords; i++) {
+        keywordAll[i] = malloc((MAX_KEYWORD_LENGTH) * sizeof(char));
+    }
+
+    keywordPresent  = malloc(nKeywords * sizeof(char*));
+    for(int i = 0; i < nKeywords; i++) {
+        keywordPresent[i] = malloc((MAX_KEYWORD_LENGTH) * sizeof(char));
+    }
+    int * kcount = (int *)malloc (nKeywords * sizeof (int));
+
     int nKeywordsPresent = get_keywords_from_file (newFile, nKeywords, keywordPresent, keywordAll, kcount);
     printf ("#keywords present %d\n", nKeywordsPresent);
     for (int t = 0; t < nKeywordsPresent; t++){
@@ -133,8 +143,6 @@ void update (char * id){
         F (w, sw);
         memset (tag, 0, SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID);
         F (w2, tag);
-        // strcpy (tag_temp,tag)
-        // strcpy(tag,tag_temp);
 
         //calculate r
         //append i to the end of sw
@@ -194,5 +202,18 @@ void update (char * id){
     for (int i = 0; i < nKeywords; i++){
         fprintf (k, "%s %d\n", keywordAll[i], kcount[i]);
     }
+    element_clear (secret_key);
+    element_clear (g);
+    element_clear (sw_seed);
+    element_clear (tag_seed);
+    element_clear (m);
+    element_clear (h);
+    element_clear (sigma);
+    element_clear (temp);
+    element_clear (sig_temp);
+
     fclose (k);
+    free (keywordAll);
+    free (keywordPresent);
+    free (kcount);
 }

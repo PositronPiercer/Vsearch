@@ -94,6 +94,11 @@ int search_server (token s_token){
   fprintf (auditor_result, "\n");
   printf ("done\n");
 
+  element_clear(sigma);
+  element_clear(sigma_prod);
+  element_clear(h);
+  element_clear(g);
+  element_clear(pbc_id_hash);
   fclose (owner_result);
   fclose (auditor_result);
 

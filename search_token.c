@@ -49,12 +49,8 @@ token search_token (char * keyword){
   //generate tag
   unsigned char tg[MAX_KEYWORD_LENGTH + MAX_KEY_LENGTH] = "";
   strcpy (tg, keyword);
-  element_printf ("ts %B\n",tag_seed);
   element_to_bytes (tg + strlen (tg), tag_seed);
   F (tg, tag);
-  // printf ("length %d\n", element_length_in_bytes(tag_seed));
-  // printf ("tagseed : %s\n%d\n",tg,strlen (tg));
-  // printf ("tag : %s\n",tag);
   printf("Done\n");
   s_token.tag = (char *)malloc (strlen (tag) * sizeof (char));
   strcpy (s_token.tag, tag);
