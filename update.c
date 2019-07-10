@@ -215,6 +215,7 @@ void update (char * id){
     element_clear (sig_temp);
 
     fclose (k);
+    fclose (Tsig);
     free (keywordAll);
     free (keywordPresent);
     free (kcount);

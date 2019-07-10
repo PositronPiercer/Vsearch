@@ -62,8 +62,8 @@ void build (){
   element_set_str(tag_seed, key_, 2);
 
   printf("Done.\n");
-  unsigned char w[MAX_KEYWORD_LENGTH] = "";
-  unsigned char w2[MAX_KEYWORD_LENGTH] = "";
+  unsigned char w[MAX_KEYWORD_LENGTH + 200] = "";
+  unsigned char w2[MAX_KEYWORD_LENGTH + 200] = "";
   char id[MAX_ID_LENGTH] = "";
   unsigned char pos[SHA_DIGEST_LENGTH] = "";
   unsigned char sw[SHA_DIGEST_LENGTH + MAX_NID] = ""; //has to store i during concat
@@ -93,14 +93,20 @@ void build (){
     printf ("Keyword : %s\n", w);
     id_file = get_id_file (w);
     strcpy (w2,w);
+    int w_len = strlen(w);
     //printf ("w length : %d w2 length : %d\n", strlen (w), strlen (w2));
     //appending sw_seed to the end of w
-    element_to_bytes (w + strlen (w), sw_seed);
+    element_to_bytes (key_,sw_seed);
+    int yy;
+    for (yy = 0; yy < element_length_in_bytes (sw_seed);yy++)
+        w[w_len + yy] = key_[yy];
+
     element_to_bytes (w2 + strlen (w2), tag_seed);
+    memset (sw, 0, SHA_DIGEST_LENGTH + MAX_NID);
     F (w, sw);
     memset (tag, 0, SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID);
     F (w2, tag);
-    //printf ("%s\n", sw);
+    //printf ("%s\n", w);
     //element_printf  ("ts : %B\n",tag_seed);
     strcpy (tag_temp,tag);
     //printf ("length %d\n", element_length_in_bytes(tag_seed));
@@ -182,7 +188,10 @@ void build (){
     element_set_mpz (m,m_sum);
     //element_printf ("sig_prod : %B\n", sig_prod);
     fclose (id_file);
-	}
+
+    memset(w,0,MAX_KEYWORD_LENGTH);
+    memset(w2, 0 , MAX_KEYWORD_LENGTH);
+    }
   fclose (W);
   fclose (Tsig);
   fclose (secret_file);

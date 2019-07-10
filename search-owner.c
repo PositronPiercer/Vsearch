@@ -61,7 +61,7 @@ void owner_search (char * keyword){
     strcpy (sw_seed_, keyword);
     element_to_bytes (sw_seed_ + strlen (sw_seed_), sw_seed); //no need to create pbc element
     F (sw_seed_, sw);
-    //printf ("%s\n",sw);
+    printf ("%s\n",sw_seed_);
     char id[MAX_ID_LENGTH] = "";
     unsigned char id_hash[SHA_DIGEST_LENGTH] = "";
     int i = 0;
