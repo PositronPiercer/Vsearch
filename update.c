@@ -74,7 +74,7 @@ void update (char * id){
     unsigned char pos[SHA_DIGEST_LENGTH] = "";
     unsigned char sw[SHA_DIGEST_LENGTH + MAX_NID] = ""; //has to store i during concat
     unsigned char tag[SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID] = ""; //has to store id and i during concat
-    
+    //unsigned char tag_temp[SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID] = "";
 
     mpz_t q, gmp_id, m_temp, r, gmp_temp;
     mpz_init (q);
@@ -105,11 +105,11 @@ void update (char * id){
     int * kcount = (int *)malloc (nKeywords * sizeof (int));
 
     int nKeywordsPresent = get_keywords_from_file (newFile, nKeywords, keywordPresent, keywordAll, kcount);
-    printf ("#keywords present %d\n", nKeywordsPresent);
-    for (int t = 0; t < nKeywordsPresent; t++){
-        printf ("%s\t", keywordPresent[t]);
-    }
-    printf ("\n");
+    //printf ("#keywords present %d\n", nKeywordsPresent);
+    // for (int t = 0; t < nKeywordsPresent; t++){
+    //     printf ("%s\t", keywordPresent[t]);
+    // }
+    // printf ("\n");
 
     fclose (keyword_file);
     for (int i = 0; i < nKeywordsPresent; i++){
@@ -143,6 +143,8 @@ void update (char * id){
         F (w, sw);
         memset (tag, 0, SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID);
         F (w2, tag);
+        // strcpy (tag_temp,tag)
+        // strcpy(tag,tag_temp);
 
         //calculate r
         //append i to the end of sw
