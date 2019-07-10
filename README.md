@@ -6,6 +6,11 @@ The paper is avalable at -
 * [GMP](https://gmplib.org/)
 * [OpenSSL](https://www.openssl.org/)
 
+## Make sure these libraries are installed before proceeding
+* [PBC](https://crypto.stanford.edu/pbc/)
+* [GMP](https://gmplib.org/)
+* [OpenSSL](https://www.openssl.org/)
+
 ## Running Instructions
 * Download or clone the repo
 * Run `python create_inv_index.py` to create the inverted index
