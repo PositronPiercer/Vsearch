@@ -7,11 +7,11 @@
 
 bool auditor_verification (char * keyword){
     printf ("_______________Auditor-Search_______________\n");
-    FILE * owner2auditor = fopen ("owner2auditor.txt", "r");
-    FILE * auditor_result = fopen ("auditor-result.txt", "r");
+    FILE * owner2auditor = common_file_open ("data/owner2auditor.txt", "r");
+    FILE * auditor_result = common_file_open ("data/auditor-result.txt", "r");
     //generate the pairing
-    FILE * secret_file = fopen ("secrets", "r");
-    FILE * param_file = fopen ("param.txt", "r");
+    FILE * secret_file = common_file_open ("data/secrets", "r");
+    FILE * param_file = common_file_open ("data/param.txt", "r");
     char param_buf[PARAM_LENGTH];
     param_buf[0] = 0; //null char at beginning
 
@@ -20,7 +20,7 @@ bool auditor_verification (char * keyword){
 
     //get parameters
     read_entire_file (param_file, param_buf);
-    fclose (param_file);
+    common_file_close (param_file);
 
     pbc_param_init_set_str(param, param_buf);
     pairing_init_pbc_param (pairing, param);
@@ -56,7 +56,7 @@ bool auditor_verification (char * keyword){
     int plength = element_from_bytes_compressed (public_key, p_bytes);
     free (p_bytes);
     printf("Done.\n");
-    fclose (secret_file);
+    common_file_close (secret_file);
     //get the verification data
     fscanf (auditor_result, "%s", key_);
     binary2bytes (key_, temp_bytes);
@@ -65,8 +65,8 @@ bool auditor_verification (char * keyword){
     element_set_str (m, key_, 2);
 
 
-    fclose (auditor_result);
-    fclose (owner2auditor);
+    common_file_close (auditor_result);
+    common_file_close (owner2auditor);
     element_pow_zn (h, g, m);
 
     pairing_apply(temp1, sig_owner, g, pairing);

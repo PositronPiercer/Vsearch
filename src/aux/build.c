@@ -8,10 +8,10 @@
 
 void build (){
   printf ("_______________Build_______________\n");
-  FILE * W = fopen ("keywords", "r");
-  FILE * Tsig = fopen ("signatures", "w");
-  FILE * secret_file = fopen ("secrets", "r");
-  FILE * param_file = fopen ("param.txt", "r");
+  FILE * W = common_file_open ("data/keywords", "r");
+  FILE * Tsig = common_file_open ("data/signatures", "w");
+  FILE * secret_file = common_file_open ("data/secrets", "r");
+  FILE * param_file = common_file_open ("data/param.txt", "r");
   char param_buf[PARAM_LENGTH];
   param_buf[0] = 0; //null char at beginning
 
@@ -22,7 +22,7 @@ void build (){
   //pbc_param_init_a_gen (param, LAMBDA, 128);
   //get parameters
   read_entire_file (param_file, param_buf);
-  fclose (param_file);
+  common_file_close (param_file);
 
   pbc_param_init_set_str(param, param_buf);
   pairing_init_pbc_param (pairing, param);
@@ -187,14 +187,14 @@ void build (){
     }
     element_set_mpz (m,m_sum);
     //element_printf ("sig_prod : %B\n", sig_prod);
-    fclose (id_file);
+    common_file_close (id_file);
 
     memset(w,0,MAX_KEYWORD_LENGTH);
     memset(w2, 0 , MAX_KEYWORD_LENGTH);
     }
-  fclose (W);
-  fclose (Tsig);
-  fclose (secret_file);
+  common_file_close (W);
+  common_file_close (Tsig);
+  common_file_close (secret_file);
 
 
 }

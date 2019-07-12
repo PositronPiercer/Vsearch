@@ -7,7 +7,7 @@
 #include "vsearch.h"
 
 void set_signature (unsigned char * pos, unsigned char * sig_bits){
-  FILE * sig_file = fopen ("signatures", "r");
+  FILE * sig_file = common_file_open ("data/signatures", "r");
   //convert pos to binary
   unsigned char pos_binary[8* sizeof (unsigned char) * SHA_DIGEST_LENGTH] = "";
   unsigned char pos_temp[8* sizeof (unsigned char) * SHA_DIGEST_LENGTH] = "";
@@ -15,7 +15,7 @@ void set_signature (unsigned char * pos, unsigned char * sig_bits){
     sprintf (pos_binary + i * 8 * sizeof (unsigned char), "%s", byte_to_binary (*(pos + i)));
   }
   while ((fscanf (sig_file,"%s %s", pos_temp, sig_bits) == 2) && (strcmp (pos_temp, pos_binary) != 0));
-  fclose (sig_file);
+  common_file_close (sig_file);
 }
 
 
@@ -25,9 +25,9 @@ int search_server (token s_token){
   FILE * id_file = get_id_file (s_token.tau_sigma_f);
 
   //build the pairing
-  FILE * param_file = fopen ("param.txt", "r");
-  FILE * owner_result  = fopen ("owner-result.txt", "w"); //search results for owner
-  FILE * auditor_result = fopen ("auditor-result.txt", "w"); //search results for auditor
+  FILE * param_file = common_file_open ("data/param.txt", "r");
+  FILE * owner_result  = common_file_open ("data/owner-result.txt", "w"); //search results for owner
+  FILE * auditor_result = common_file_open ("data/auditor-result.txt", "w"); //search results for auditor
   char param_buf[PARAM_LENGTH];
   param_buf[0] = 0; //null char at beginning
 
@@ -37,7 +37,7 @@ int search_server (token s_token){
 
   //get parameters
   read_entire_file (param_file, param_buf);
-  fclose (param_file);
+  common_file_close (param_file);
 
   pbc_param_init_set_str (param, param_buf);
   pairing_init_pbc_param (pairing, param);
@@ -99,8 +99,8 @@ int search_server (token s_token){
   element_clear(h);
   element_clear(g);
   element_clear(pbc_id_hash);
-  fclose (owner_result);
-  fclose (auditor_result);
+  common_file_close (owner_result);
+  common_file_close (auditor_result);
 
 
 }

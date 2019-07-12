@@ -18,11 +18,11 @@ int get_keywords_from_file (FILE * input_file, int count, char ** keyword_presen
     //returns the number of keywords present
     //fills keyword_all , kcount and keyword_present
     char ** keyword_all_duplicate;
-    keyword_all_duplicate = malloc(count * sizeof(char*));
+    keyword_all_duplicate = malloc(count * sizeof(char*));// eliminate
     for(int i = 0; i < count; i++) {
         keyword_all_duplicate[i] = malloc((MAX_KEYWORD_LENGTH) * sizeof(char));
     }
-    FILE * keywords = fopen ("keywords", "r");
+    FILE * keywords = common_file_open ("data/keywords", "r");
     char buff[MAX_KEY_LENGTH];
     int tmpInt;
 
@@ -33,7 +33,7 @@ int get_keywords_from_file (FILE * input_file, int count, char ** keyword_presen
         strcpy (keyword_all_duplicate [i], buff);
         kcount[i] = tmpInt;
     }
-    fclose (keywords);
+    common_file_close (keywords);
     int j = 0;
     while (fscanf (input_file, "%s", buff) == 1){
         if (keyword_is_present (count, keyword_all_duplicate, buff)){

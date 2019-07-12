@@ -19,9 +19,9 @@ int getIndex (int count, char * ibuf, char ** set){
 
 void update (char * id){
     //--------------
-    FILE * secret_file = fopen ("secrets", "r");
-    FILE * param_file = fopen ("param.txt", "r");
-    FILE * Tsig = fopen ("signatures", "a");
+    FILE * secret_file = common_file_open ("data/secrets", "r");
+    FILE * param_file = common_file_open ("data/param.txt", "r");
+    FILE * Tsig = common_file_open ("data/signatures", "a");
     char param_buf[PARAM_LENGTH];
     param_buf[0] = 0; //null char at beginning
 
@@ -31,7 +31,7 @@ void update (char * id){
 
     //get parameters
     read_entire_file (param_file, param_buf);
-    fclose (param_file);
+    common_file_close (param_file);
 
     pbc_param_init_set_str(param, param_buf);
     pairing_init_pbc_param (pairing, param);
@@ -85,8 +85,8 @@ void update (char * id){
     set_q (buff); //get the group order
     mpz_set_str (q, buff, 10);
     //--------------
-    FILE * newFile = fopen (id, "r");
-    FILE * keyword_file = fopen ("keywords", "r");
+    FILE * newFile = common_file_open (id, "r");
+    FILE * keyword_file = common_file_open ("data/keywords", "r");
     int nKeywords = 0;
     //count number of nKeywords
     while (fscanf (keyword_file, "%s %*d", buff) == 1) nKeywords++;
@@ -111,7 +111,7 @@ void update (char * id){
     // }
     // printf ("\n");
 
-    fclose (keyword_file);
+    common_file_close (keyword_file);
     for (int i = 0; i < nKeywordsPresent; i++){
         //update the count
         strcpy (buff, keywordPresent[i]);
@@ -123,14 +123,14 @@ void update (char * id){
             //new file needs to be created
             FILE * id_file = create_new_id_file(buff);
             fprintf (id_file, "%s\n", id);
-            fclose (id_file);
+            common_file_close (id_file);
         }
         else{
             // should check whether the id is already present or not
             FILE * id_file = get_id_file (buff);
             fseek (id_file, 0 , SEEK_END);
             fprintf (id_file, "%s\n", id);
-            fclose (id_file);
+            common_file_close (id_file);
         }
 
         //create the pos and signature pair
@@ -200,7 +200,7 @@ void update (char * id){
     }
 
     //write back
-    FILE * k = fopen ("keywords", "w");
+    FILE * k = common_file_open ("data/keywords", "w");
     for (int i = 0; i < nKeywords; i++){
         fprintf (k, "%s %d\n", keywordAll[i], kcount[i]);
     }
@@ -214,8 +214,12 @@ void update (char * id){
     element_clear (temp);
     element_clear (sig_temp);
 
-    fclose (k);
-    fclose (Tsig);
+    common_file_close (k);
+    common_file_close (Tsig);
+    for(int i = 0; i < nKeywords; i++) {
+        free (keywordAll[i]);
+        free (keywordPresent[i]);
+    }
     free (keywordAll);
     free (keywordPresent);
     free (kcount);

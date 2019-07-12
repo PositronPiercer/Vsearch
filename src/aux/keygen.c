@@ -15,9 +15,9 @@ int keygen_compute(unsigned long int lambda,keys * K_psi_l){
     pairing_init_pbc_param (pairing, param);
 
     //store the parameters
-    FILE * param_file = fopen ("param.txt", "w");
+    FILE * param_file = common_file_open ("data/param.txt", "w");
     pbc_param_out_str(param_file, param);
-    fclose (param_file);
+    common_file_close (param_file);
 
     // declarations
     element_t g;
@@ -80,7 +80,7 @@ int keygen() {
     //writing to file
     printf("Writing to file\n");
     FILE * secret_file;
-    secret_file = fopen("secrets","w");
+    secret_file = common_file_open("data/secrets","w");
 
 
     print_to_binary(K_psi_l->g_length, secret_file,"g",K_psi_l->g);
@@ -88,7 +88,7 @@ int keygen() {
     print_to_binary(K_psi_l->Pk_length,secret_file,"Pk",K_psi_l->Pk);
     print_to_binary(K_psi_l->Ks_length,secret_file,"Ks",K_psi_l->Ks);
     print_to_binary(K_psi_l->Kt_length,secret_file,"Kt",K_psi_l->Kt);
-    fclose(secret_file);
+    common_file_close(secret_file);
 
     printf("Freeing Memory\n");
     free(K_psi_l->Sk);

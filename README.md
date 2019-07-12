@@ -13,3 +13,5 @@ For building the inverted index, all the test files must be in same directory
 * Run `make` to create the binaries
 * Run `python3 create_inv_index.py` to create the inverted index (Note that building inverted index is not a part of the algorithm and a hack has been used to build it, therefore it is required that you run `./vsearch` and then select keygen before building the inverted index)
 * Run `./vsearch` to execute
+
+korg? how is it generated?

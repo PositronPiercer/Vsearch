@@ -2612,7 +2612,7 @@ clothing 0
 swimwear 0
 sports 0
 shoes 0
-hat 0
+hat 1
 shorts 0
 shirt 0
 life 0
@@ -5001,7 +5001,7 @@ perrin 0
 cobra 0
 stumbling 0
 block 0
-ball 1
+ball 3
 active 0
 inactive 0
 paycheck 0
@@ -5498,7 +5498,7 @@ stretches 0
 stood 0
 leash 0
 gooood 0
-girl 0
+girl 2
 kennel 0
 potty 0
 shady 0
@@ -11430,7 +11430,7 @@ animal 0
 profession 0
 consultant 0
 friggin 0
-dog 1
+dog 2
 refused 0
 venting 0
 unsuccessfully 0
@@ -14202,7 +14202,7 @@ evolve 0
 fraternity 0
 establishing 0
 campuses 0
-men 0
+men 2
 undergraduate 0
 chapter 0
 acb 0
@@ -14581,7 +14581,7 @@ anytime 0
 wayyyy 0
 317 0
 wanna 0
-bag 0
+bag 2
 pork 0
 beans 0
 1218 0
@@ -21539,7 +21539,7 @@ bachelor 0
 3501 0
 3499 0
 2001100809txt 0
-999 0
+999 1
 2001100804txt 0
 2009 0
 handwritten 0
@@ -36105,7 +36105,7 @@ connective 0
 321to 0
 3305from 0
 3305to 0
-apple 1
+apple 3
 giby 0
 yorkwants 0
 0040 0
@@ -40432,7 +40432,7 @@ status2 0
 dalai 0
 lama 0
 cow 0
-rat 1
+rat 3
 interpretations 0
 signifies 0
 mantra 0

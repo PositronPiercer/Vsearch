@@ -44,19 +44,19 @@ unsigned long int R (unsigned char * ibuf){ //utility function
 FILE * get_id_file(char * keyword){
   //takes keyword as input and returns the file pointer for the file containing the ids
   char buff[100 + MAX_KEYWORD_LENGTH];
-  strcpy (buff, "inv_index/");
+  strcpy (buff, "data/inv_index/");
   strcat (buff, keyword);
   strcat (buff, ".ids");
-  FILE * id_file = fopen (buff,"r+");
+  FILE * id_file = common_file_open (buff,"r+");
   return id_file;
 }
 
 FILE * create_new_id_file(char * keyword){
     char buff[100 + MAX_KEYWORD_LENGTH];
-    strcpy (buff, "inv_index/");
+    strcpy (buff, "data/inv_index/");
     strcat (buff, keyword);
     strcat (buff, ".ids");
-    FILE * id_file = fopen (buff,"w");
+    FILE * id_file = common_file_open (buff,"w");
     return id_file;
 }
 
@@ -79,7 +79,7 @@ void binary2bytes(unsigned char * ibuf,unsigned char * obuf){
 }
 
 void set_q (unsigned char * key){
-    FILE * param_file = fopen ("param.txt", "r");
+    FILE * param_file = common_file_open ("data/param.txt", "r");
     fscanf (param_file, "%*s %s", key);
     fscanf (param_file, "%*s %s", key);
 }
@@ -103,4 +103,27 @@ int print_to_binary(int length,FILE * secret_file,char * secret_type, char * sec
         fprintf(secret_file,"%s",byte_to_binary(*(sec + i)));
     }
     fprintf(secret_file,"\n");
+}
+
+
+FILE *common_file_open(char * scrFileName, char * mode){
+
+    FILE *srcFilePtr=fopen(scrFileName,mode);
+	if (!srcFilePtr){
+			printf("Error: Unable to open file!\n");
+            printf("File: %s\t Mode: %s\n", scrFileName, mode);
+			return NULL;
+	}
+    return srcFilePtr;
+}
+
+int common_file_close(FILE *filePtr){
+
+    if (!filePtr){
+			printf("Error: Unable to close file!\n");
+            printf("Given file Does not exist!\n");
+            return 1;
+	}
+    fclose(filePtr);
+    return 0;
 }

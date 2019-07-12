@@ -6,28 +6,28 @@
 #include <time.h>
 
 int get_c (char * keyword){
-    FILE * keyword_file = fopen ("keywords", "r");
+    FILE * keyword_file = common_file_open ("data/keywords", "r");
     int c = 0;
     char kw[MAX_KEYWORD_LENGTH] = "";
     while (fscanf (keyword_file, "%s %d", kw, &c) && (strcmp (keyword, kw) != 0));
-    fclose (keyword_file);
+    common_file_close (keyword_file);
     return c;
 }
 
 void owner_search (char * keyword){
     printf ("_______________Owner-Search_______________\n");
     //build pairing
-    FILE * owner2auditor = fopen ("owner2auditor.txt", "w");
-    FILE * param_file = fopen ("param.txt", "r");
-    FILE * secret_file = fopen ("secrets", "r");
-    FILE * id_file = fopen ("owner-result.txt", "r");
+    FILE * owner2auditor = common_file_open ("data/owner2auditor.txt", "w");
+    FILE * secret_file = common_file_open ("data/secrets", "r");
+    FILE * param_file = common_file_open ("data/param.txt", "r");
+    FILE * id_file = common_file_open ("data/owner-result.txt", "r");
     char param_buf[PARAM_LENGTH];
     param_buf[0] = 0; //null char at beginning
     pbc_param_t param;
     pairing_t pairing;
     //get parameters
     read_entire_file (param_file, param_buf);
-    fclose (param_file);
+    common_file_close (param_file);
 
     pbc_param_init_set_str (param, param_buf);
     pairing_init_pbc_param (pairing, param);
@@ -51,7 +51,7 @@ void owner_search (char * keyword){
     fscanf (secret_file,"%*s %s",key_);
     element_set_str(sw_seed, key_, 2);
     printf("Done.\n");
-    fclose (secret_file);
+    common_file_close (secret_file);
 
     int c = get_c (keyword);
 
@@ -126,6 +126,6 @@ void owner_search (char * keyword){
     element_clear (m);
     element_clear (m_test);
     element_clear (temp);
-    fclose (id_file);
-    fclose (owner2auditor);
+    common_file_close (id_file);
+    common_file_close (owner2auditor);
 }
