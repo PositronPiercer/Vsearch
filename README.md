@@ -11,7 +11,7 @@ For building the inverted index, all the test files must be in same directory
 
 ## Running Instructions
 * Download or clone the repo
-* Modify the `include/db_secrets` according to you database configuration
+* Modify the `include/db_secrets.h` according to you database configuration
 * Run `make` to create the binaries
 * Run `./init_db` to setup the database
 * Now you have to load the keyword table into your database. Login to your database and enter `SOURCE data/keyw.sql;` ( replace 'data/keyw.sql' with the address of the keyw.sql file.
