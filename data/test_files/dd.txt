@@ -1,8 +1,6 @@
-girl
+apple 
 ball
-bag
-dog
-men
-apple
-rat
+999
+asfr
+trr56
 

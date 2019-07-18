@@ -4,17 +4,16 @@
 #include <string.h>
 #include "utilities.h"
 #include <time.h>
+#include <my_global.h>
+#include <mysql.h>
+#include "db_secrets.h"
 
-int get_c (char * keyword){
-    FILE * keyword_file = common_file_open ("data/keywords", "r");
-    int c = 0;
-    char kw[MAX_KEYWORD_LENGTH] = "";
-    while (fscanf (keyword_file, "%s %d", kw, &c) && (strcmp (keyword, kw) != 0));
-    common_file_close (keyword_file);
-    return c;
-}
 
 void owner_search (char * keyword){
+    MYSQL * con = mysql_init (NULL);
+    if (mysql_real_connect (con, "localhost", "root", ROOT_PASS, DATABASE_NAME, 0, NULL, 0) == NULL){
+          printf ("%s\n", mysql_error (con));
+    }
     printf ("_______________Owner-Search_______________\n");
     //build pairing
     FILE * owner2auditor = common_file_open ("data/owner2auditor.txt", "w");
@@ -53,7 +52,17 @@ void owner_search (char * keyword){
     printf("Done.\n");
     common_file_close (secret_file);
 
-    int c = get_c (keyword);
+    char query[200] = "";
+    strcpy(query, "SELECT c FROM keywords WHERE keyword='");
+    strcat(query, keyword);
+    strcat(query, "'");
+    mysql_query(con, query);
+    MYSQL_RES * result = mysql_store_result (con);
+    MYSQL_ROW row;
+    row = mysql_fetch_row (result);
+    int c = atoi (row[0]);
+    mysql_free_result(result);
+    mysql_close (con);
 
     //calculate sw
     char sw_seed_[MAX_KEYWORD_LENGTH] = "";
@@ -61,7 +70,6 @@ void owner_search (char * keyword){
     strcpy (sw_seed_, keyword);
     element_to_bytes (sw_seed_ + strlen (sw_seed_), sw_seed); //no need to create pbc element
     F (sw_seed_, sw);
-    //printf ("%s\n",sw_seed_);
     char id[MAX_ID_LENGTH] = "";
     unsigned char id_hash[SHA_DIGEST_LENGTH] = "";
     int i = 0;
@@ -83,7 +91,7 @@ void owner_search (char * keyword){
         sprintf (sw + strlen (sw), "%d", i);
         //printf ("%s\n", keyword);
         unsigned long int rtemp = R (sw);
-  	  //remove end digit from sw
+  	    //remove end digit from sw
         int c_copy = i;
         while (c_copy){
         sw[strlen (sw) - 1] = 0;
@@ -114,7 +122,6 @@ void owner_search (char * keyword){
         //write data to file
         printf ("count matched\n");
         element_set_mpz (m, m_sum);
-        //element_printf ("sum %B\n",m);
         element_to_bytes (key_, m);
         for (int i = 0; i< element_length_in_bytes (m); i++){
             fprintf (owner2auditor, "%s", byte_to_binary (key_[i]));

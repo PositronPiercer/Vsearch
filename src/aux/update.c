@@ -3,25 +3,18 @@
 #include <pbc/pbc.h>
 #include <string.h>
 #include "utilities.h"
-
-int getIndex (int count, char * ibuf, char ** set){
-    int index = 0;
-    for (;index < count; index++){
-        if (!strcmp (set[index], ibuf))
-            return index;
-    }
-        printf ("Keyword not found.\n");
-        exit(0);
-
-
-}
-
+#include <my_global.h>
+#include <mysql.h>
+#include "db_secrets.h"
 
 void update (char * id){
     //--------------
+    MYSQL * con = mysql_init (NULL);
+    if (mysql_real_connect (con, "localhost", "root", ROOT_PASS, DATABASE_NAME, 0, NULL, 0) == NULL){
+        printf ("%s\n", mysql_error (con));
+    }
     FILE * secret_file = common_file_open ("data/secrets", "r");
     FILE * param_file = common_file_open ("data/param.txt", "r");
-    FILE * Tsig = common_file_open ("data/signatures", "a");
     char param_buf[PARAM_LENGTH];
     param_buf[0] = 0; //null char at beginning
 
@@ -74,7 +67,6 @@ void update (char * id){
     unsigned char pos[SHA_DIGEST_LENGTH] = "";
     unsigned char sw[SHA_DIGEST_LENGTH + MAX_NID] = ""; //has to store i during concat
     unsigned char tag[SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID] = ""; //has to store id and i during concat
-    //unsigned char tag_temp[SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID] = "";
 
     mpz_t q, gmp_id, m_temp, r, gmp_temp;
     mpz_init (q);
@@ -86,40 +78,33 @@ void update (char * id){
     mpz_set_str (q, buff, 10);
     //--------------
     FILE * newFile = common_file_open (id, "r");
-    FILE * keyword_file = common_file_open ("data/keywords", "r");
-    int nKeywords = 0;
-    //count number of nKeywords
-    while (fscanf (keyword_file, "%s %*d", buff) == 1) nKeywords++;
-    //printf ("#keywords %d\n",nKeywords);
-    char **keywordAll;
-    char **keywordPresent;
-    keywordAll = malloc(nKeywords * sizeof(char*));
-    for(int i = 0; i < nKeywords; i++) {
-        keywordAll[i] = malloc((MAX_KEYWORD_LENGTH) * sizeof(char));
-    }
+    int i = 0;
+    char query_[200] = "";
+    while (fscanf (newFile, "%s", buff) == 1){
+        strcpy(query_, "SELECT IFNULL( (SELECT c FROM keywords WHERE keyword='");
+        strcat(query_, buff);
+        strcat(query_, "'),-1)");
+        mysql_query (con, query_);
+        
+        MYSQL_RES * result = mysql_store_result (con);
+        MYSQL_ROW row;
+        row = mysql_fetch_row (result);
+        int kcount = atoi(row[0]);
+        if (kcount == -1)
+            continue;
 
-    keywordPresent  = malloc(nKeywords * sizeof(char*));
-    for(int i = 0; i < nKeywords; i++) {
-        keywordPresent[i] = malloc((MAX_KEYWORD_LENGTH) * sizeof(char));
-    }
-    int * kcount = (int *)malloc (nKeywords * sizeof (int));
-
-    int nKeywordsPresent = get_keywords_from_file (newFile, nKeywords, keywordPresent, keywordAll, kcount);
-    //printf ("#keywords present %d\n", nKeywordsPresent);
-    // for (int t = 0; t < nKeywordsPresent; t++){
-    //     printf ("%s\t", keywordPresent[t]);
-    // }
-    // printf ("\n");
-
-    common_file_close (keyword_file);
-    for (int i = 0; i < nKeywordsPresent; i++){
         //update the count
-        strcpy (buff, keywordPresent[i]);
-        int index = getIndex (nKeywords, buff, keywordAll);
-        kcount[index]++;
+        memset(query_,0,200);
+        strcpy(query_, "UPDATE keywords SET c=");
+        sprintf (query_ + strlen (query_), "%d", kcount +1);
+        strcat (query_," WHERE keyword='");
+        strcat (query_,buff);
+        strcat (query_,"'");
 
+        mysql_query (con, query_);
+        kcount++;
         //add the id to the id file
-        if (kcount[index] == 1){
+        if (kcount == 1){
             //new file needs to be created
             FILE * id_file = create_new_id_file(buff);
             fprintf (id_file, "%s\n", id);
@@ -134,7 +119,6 @@ void update (char * id){
         }
 
         //create the pos and signature pair
-
         strcpy (w, buff);
         strcpy (w2,w);
         //appending sw_seed to the end of w
@@ -143,15 +127,13 @@ void update (char * id){
         F (w, sw);
         memset (tag, 0, SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID);
         F (w2, tag);
-        // strcpy (tag_temp,tag)
-        // strcpy(tag,tag_temp);
 
         //calculate r
         //append i to the end of sw
-        sprintf (sw + strlen (sw), "%d", kcount[index]);
+        sprintf (sw + strlen (sw), "%d", kcount);
         unsigned long int rtemp = R (sw);
         //remove end digit from sw
-        int c_copy = kcount[index];
+        int c_copy = kcount;
         while (c_copy){
         sw[strlen (sw) - 1] = 0;
         c_copy /= 10;
@@ -174,7 +156,7 @@ void update (char * id){
 
         //calculate pos
         strcat (tag, id);
-        sprintf (tag + strlen (tag), "%d", kcount[index]);
+        sprintf (tag + strlen (tag), "%d", kcount);
 
         F (tag, pos);
         tag[strlen (tag) - 1] = 0;
@@ -182,28 +164,33 @@ void update (char * id){
 
         unsigned char * sigma_bytes = (unsigned char *)malloc (sigma_length * sizeof (unsigned char));
         element_to_bytes_compressed (sigma_bytes, sigma);
-        //print to file
+
+        //enter into database
+        unsigned char * query = (unsigned char *)malloc (2000 * sizeof (unsigned char));
+        strcpy (query, "INSERT INTO signatures VALUES('");
         for (int t = 0; t < strlen (pos); t++){
-          fprintf (Tsig, "%s", byte_to_binary (pos[t]));
+          strcat (query, byte_to_binary (pos[t]));
         }
-
-        fprintf(Tsig, " ");
-
-              if (sigma_length == 0){
-                  printf ("Failed to sign\n");
-              }
+        strcat (query, "','");
+      	if (sigma_length == 0){
+      		printf ("Failed to sign\n");
+      	}
         for (int t = 0; t < sigma_length; t++){
-          fprintf (Tsig, "%s", byte_to_binary (sigma_bytes[t]));;
+          strcat (query, byte_to_binary (sigma_bytes[t]));
         }
-        fprintf(Tsig, "\n");
+        free (sigma_bytes);
+        strcat (query, "')");
+        if (mysql_query (con, query)){
+            printf ("%s\n", mysql_error(con));
+        }
+        free (query);
 
+        i++;
+	    mysql_free_result(result);
+        memset(buff, 0, MAX_KEY_LENGTH);
+        memset(query_, 0, 200);
     }
 
-    //write back
-    FILE * k = common_file_open ("data/keywords", "w");
-    for (int i = 0; i < nKeywords; i++){
-        fprintf (k, "%s %d\n", keywordAll[i], kcount[i]);
-    }
     element_clear (secret_key);
     element_clear (g);
     element_clear (sw_seed);
@@ -213,14 +200,4 @@ void update (char * id){
     element_clear (sigma);
     element_clear (temp);
     element_clear (sig_temp);
-
-    common_file_close (k);
-    common_file_close (Tsig);
-    for(int i = 0; i < nKeywords; i++) {
-        free (keywordAll[i]);
-        free (keywordPresent[i]);
-    }
-    free (keywordAll);
-    free (keywordPresent);
-    free (kcount);
 }

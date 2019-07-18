@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "vsearch.h"
 #include <stdbool.h>
-
+#include <string.h>
 
 int main(int argc, char *argv[]){
     char buff[500];
@@ -15,8 +15,6 @@ int main(int argc, char *argv[]){
         printf ("1. Keygen\n2. Build\n3. Search\n4. Update\n");
         exit(0);
     }
-
-    while(1){
     switch (choice) {
             case 0:
                 printf("Exit successfully\n" );
@@ -59,8 +57,5 @@ int main(int argc, char *argv[]){
             default: printf ("Invalid choice\n"); exit(0);
         }
         printf("---------------------------------\n" );
-        printf ("0. Exit\n3. Search\n4. Update\n");
-        printf ("Enter choice : ");
-        scanf ("%d", &choice);
-    }
+    
 }

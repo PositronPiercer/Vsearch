@@ -3,13 +3,18 @@
 #include <pbc/pbc.h>
 #include <string.h>
 #include <openssl/sha.h>
-//#include "utilities.h"
+#include <my_global.h>
+#include <mysql.h>
+#include "db_secrets.h"
 #include "vsearch.h"
 
 void build (){
+  MYSQL * con = mysql_init (NULL);
+  if (mysql_real_connect (con, "localhost", "root", ROOT_PASS, DATABASE_NAME, 0, NULL, 0) == NULL){
+      printf ("%s\n", mysql_error (con));
+  }
   printf ("_______________Build_______________\n");
   FILE * W = common_file_open ("data/keywords", "r");
-  FILE * Tsig = common_file_open ("data/signatures", "w");
   FILE * secret_file = common_file_open ("data/secrets", "r");
   FILE * param_file = common_file_open ("data/param.txt", "r");
   char param_buf[PARAM_LENGTH];
@@ -19,7 +24,6 @@ void build (){
   pbc_param_t param;
   pairing_t pairing;
 
-  //pbc_param_init_a_gen (param, LAMBDA, 128);
   //get parameters
   read_entire_file (param_file, param_buf);
   common_file_close (param_file);
@@ -85,10 +89,17 @@ void build (){
 
 
   printf ("Building...\n");
+  mysql_query (con, "DROP TBALE IF EXISTS signatures");
+  mysql_query(con, "CREATE TABLE signatures(pos VARCHAR(500), sig VARCHAR(500))");
+  mysql_query (con, "SELECT * FROM keywords WHERE c>0");
+  MYSQL_RES * result = mysql_store_result (con);
+  MYSQL_ROW row;
+  
 
-  while (fscanf (W,"%s %d", w, &c) == 2){
-    if (c == 0)
-        continue;
+
+  while (row = mysql_fetch_row (result)){
+    strcpy(w, row[0]);
+    c = atoi(row[1]);
     mpz_set_ui (m_sum,0);
     printf ("Keyword : %s\n", w);
     id_file = get_id_file (w);
@@ -106,20 +117,13 @@ void build (){
     F (w, sw);
     memset (tag, 0, SHA_DIGEST_LENGTH + MAX_ID_LENGTH + MAX_NID);
     F (w2, tag);
-    //printf ("%s\n", w);
-    //element_printf  ("ts : %B\n",tag_seed);
     strcpy (tag_temp,tag);
-    //printf ("length %d\n", element_length_in_bytes(tag_seed));
-    //printf ("tag seed  : %s\n%d\n",w2,strlen (w2));
-    //printf ("tag  : %s\n",tag);
     for (int i = 1; i <= c; i++){
       strcpy(tag,tag_temp);
-      //printf ("tag  : %s\n",tag);
       memset (id, 0, MAX_ID_LENGTH);
       fgets (id, MAX_ID_LENGTH, id_file);
 	  //remove \n from end
 	  id[strlen (id) - 1] = 0;
-      // fscanf(id_file, "%s", id);
       //calculate r
       //append i to the end of sw
       sprintf (sw + strlen (sw), "%d", i);
@@ -151,49 +155,45 @@ void build (){
       //  sign
       element_pow_zn (temp, g, m);
       element_pow_zn (sigma, temp, secret_key);
-      //element_printf ("sig : %B\n",sigma);
-      if (i ==1){
-          element_set (sig_prod, sigma);
-      }
-      else{
-          element_mul (sig_prod, sig_prod, sigma);
-      }
 
       //calculate pos
       strcat (tag, id);
       sprintf (tag + strlen (tag), "%d", i);
-
+      memset(pos,0,SHA_DIGEST_LENGTH);
       F (tag, pos);
-      //printf ("%s\n",tag);
       tag[strlen (tag) - 1] = 0;
       int sigma_length = element_length_in_bytes_compressed (sigma);
       unsigned char * sigma_bytes = (unsigned char *)malloc (sigma_length * sizeof (unsigned char));
       element_to_bytes_compressed (sigma_bytes, sigma);
-      //print to file
+      //enter into database
+      unsigned char * query = (unsigned char *)malloc (2000 * sizeof (unsigned char));
+      strcpy (query, "INSERT INTO signatures VALUES('");
       for (int t = 0; t < strlen (pos); t++){
-        fprintf (Tsig, "%s", byte_to_binary (pos[t]));
+        strcat (query, byte_to_binary (pos[t]));
       }
-
-      fprintf(Tsig, " ");
-
-			if (sigma_length == 0){
-				printf ("Failed to sign\n");
-			}
+      strcat (query, "','");
+    	if (sigma_length == 0){
+    		printf ("Failed to sign\n");
+    	}
       for (int t = 0; t < sigma_length; t++){
-        fprintf (Tsig, "%s", byte_to_binary (sigma_bytes[t]));;
+        strcat (query, byte_to_binary (sigma_bytes[t]));
       }
-      fprintf(Tsig, "\n");
+      free (sigma_bytes);
+      strcat (query, "')");
+      if (mysql_query (con, query)){
+          printf ("%s\n", mysql_error(con));
+      }
+      free (query);
 
     }
-    element_set_mpz (m,m_sum);
-    //element_printf ("sig_prod : %B\n", sig_prod);
     common_file_close (id_file);
 
     memset(w,0,MAX_KEYWORD_LENGTH);
     memset(w2, 0 , MAX_KEYWORD_LENGTH);
     }
+  mysql_free_result(result);
+  mysql_close (con);
   common_file_close (W);
-  common_file_close (Tsig);
   common_file_close (secret_file);
 
 

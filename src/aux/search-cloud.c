@@ -3,23 +3,16 @@
 #include <pbc/pbc.h>
 #include <string.h>
 #include <openssl/sha.h>
-//#include "utilities.h"
+#include <my_global.h>
+#include <mysql.h>
+#include "db_secrets.h"
 #include "vsearch.h"
 
-void set_signature (unsigned char * pos, unsigned char * sig_bits){
-  FILE * sig_file = common_file_open ("data/signatures", "r");
-  //convert pos to binary
-  unsigned char pos_binary[8* sizeof (unsigned char) * SHA_DIGEST_LENGTH] = "";
-  unsigned char pos_temp[8* sizeof (unsigned char) * SHA_DIGEST_LENGTH] = "";
-  for (int i = 0; i < strlen (pos); i++){
-    sprintf (pos_binary + i * 8 * sizeof (unsigned char), "%s", byte_to_binary (*(pos + i)));
-  }
-  while ((fscanf (sig_file,"%s %s", pos_temp, sig_bits) == 2) && (strcmp (pos_temp, pos_binary) != 0));
-  common_file_close (sig_file);
-}
-
-
 int search_server (token s_token){
+  MYSQL * con = mysql_init (NULL);
+  if (mysql_real_connect (con, "localhost", "root", ROOT_PASS, DATABASE_NAME, 0, NULL, 0) == NULL){
+      printf ("%s\n", mysql_error (con));
+  }
   printf ("_______________Cloud-Search_______________\n");
   //get the id file
   FILE * id_file = get_id_file (s_token.tau_sigma_f);
@@ -67,25 +60,36 @@ int search_server (token s_token){
     i++;
     //calculate pos
     strcpy (tag, s_token.tag);
-    //printf ("tag : %s\n",tag);
     strcat (tag, id);
     sprintf (tag + strlen (tag), "%d", i);
     F (tag, pos);
 
     //get signature
-    set_signature(pos, sig_bits);
+    unsigned char pos_binary[8* sizeof (unsigned char) * SHA_DIGEST_LENGTH] = "";
+    for (int i = 0; i < strlen (pos); i++){
+      sprintf (pos_binary + i * 8 * sizeof (unsigned char), "%s", byte_to_binary (*(pos + i)));
+    }
+    char query[700] = "";
+    strcpy (query, "SELECT sig FROM signatures WHERE pos='");
+    strcat (query, pos_binary);
+    strcat(query,"'");
+    memset(pos_binary, 0, 8* sizeof (unsigned char) * SHA_DIGEST_LENGTH);
+    mysql_query (con, query);
+    MYSQL_RES * result = mysql_store_result (con);
+    MYSQL_ROW row;
+    row = mysql_fetch_row (result);
+    strcpy(sig_bits, row[0]);
     binary2bytes (sig_bits, key_);
     element_from_bytes_compressed (sigma, key_);
-    //element_printf ("sig %B\n", sigma);
     if (i == 1){
         element_set (sigma_prod, sigma);
     }
     else {
         element_mul (sigma_prod, sigma_prod, sigma);
     }
+    mysql_free_result(result);
   }
   element_to_bytes_compressed (key_, sigma_prod);
-  //element_printf ("sig prod %B\n", sigma_prod);
   printf("Owner results written\n");
   printf ("Writing auditor-result...");
   for (int i = 0; i < element_length_in_bytes_compressed (sigma_prod); i++){
@@ -101,6 +105,4 @@ int search_server (token s_token){
   element_clear(pbc_id_hash);
   common_file_close (owner_result);
   common_file_close (auditor_result);
-
-
 }
