@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -lpbc -lgmp -lssl -lcrypto -lm -g
+CFLAGS = -lpbc -lgmp -lssl -lcrypto -lm 
 
 all: comp init_db #keyGen invIndGen build search
 
