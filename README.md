@@ -1,5 +1,5 @@
 # C implementation of a Forward Secure Publicly Verifiable DSSE Scheme
-The paper is avalable at -
+
 
 ## Make sure these libraries are installed before proceeding
 * [PBC](https://crypto.stanford.edu/pbc/)
